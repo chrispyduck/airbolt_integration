@@ -1,17 +1,18 @@
 {
   "domain": "airbolt",
   "name": "Airbolt",
-  "codeowners": ["@chrispyduck"],
+  "codeowners": [
+    "@chrispyduck"
+  ],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://chrispyduck.github.io/hass-airbolt",
   "homekit": {},
   "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/chrispyduck/airbolt_integration/issues",
   "requirements": [
     "pydantic>=1,<2"
   ],
-  "ssdp": [],
-  "zeroconf": [],
   "loggers": [
     "airbolt",
     "airbolt.client",

@@ -4,5 +4,8 @@ set -e
 
 cd "$(dirname "$0")/.."
 
+echo " ==> ruff"
 ruff check . --fix
+
+echo " ==> pylint"
 pylint custom_components
