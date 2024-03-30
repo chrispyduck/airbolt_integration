@@ -1,4 +1,4 @@
-# Integration Blueprint
+# Airbolt Integration
 
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
@@ -6,15 +6,11 @@
 
 ![Project Maintenance][maintenance-shield]
 
-_Integration to integrate with [Airbolt](https://theairbolt.com/) devices._
+Integrates [Airbolt](https://theairbolt.com/) GPS tracker devices.
 
-**This integration will set up the following platforms.**
-
-Platform | Description
--- | --
-`binary_sensor` | Show something `True` or `False`.
-`sensor` | Show info from blueprint API.
-`switch` | Switch something `True` or `False`.
+## Features
+* Create a tracker entity for each registered device
+* Sensors for some basic info like modem voltage and temperature, operating mode, and device type
 
 ## Installation
 
@@ -26,9 +22,9 @@ Platform | Description
 1. Restart Home Assistant
 1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Integration blueprint"
 
-## Configuration is done in the UI
+## Configuration
 
-<!---->
+Configuration is done in the HA UI and only requires providing your Airbolt credentials.
 
 ## Contributions are welcome!
 
