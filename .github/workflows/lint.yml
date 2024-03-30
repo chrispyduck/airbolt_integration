@@ -27,3 +27,21 @@ jobs:
 
         - name: "Run"
           run: python3 -m ruff check .
+  pylint:
+    name: "Pylint"
+    runs-on: "ubuntu-latest"
+    steps:
+        - name: "Checkout the repository"
+          uses: "actions/checkout@v4.1.0"
+
+        - name: "Set up Python"
+          uses: actions/setup-python@v4.7.1
+          with:
+            python-version: "3.11"
+            cache: "pip"
+
+        - name: "Install requirements"
+          run: python3 -m pip install -r requirements.txt
+
+        - name: "Run"
+          run: pylint custom_components
