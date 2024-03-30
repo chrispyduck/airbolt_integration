@@ -8,11 +8,6 @@
   "dependencies": [],
   "documentation": "https://chrispyduck.github.io/hass-airbolt",
   "homekit": {},
-  "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/chrispyduck/airbolt_integration/issues",
-  "requirements": [
-    "pydantic>=1,<2"
-  ],
   "loggers": [
     "airbolt",
     "airbolt.client",
@@ -20,6 +15,11 @@
     "airbolt.device_tracker",
     "airbolt.hub",
     "airbolt.sensor"
+  ],
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/chrispyduck/airbolt_integration/issues",
+  "requirements": [
+    "pydantic>=1,<2"
   ],
   "version": "0.1.0"
 }
