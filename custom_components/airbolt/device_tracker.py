@@ -115,8 +115,8 @@ class LocationTracker(CoordinatorEntity, TrackerEntity):
 
     @property
     def location_name(self) -> str | None:
-        """Return the friendly name of the last reported coordinates, as reported by the Airbolt API."""
-        return self._tracker.address
+        """Return nothing so HASS will use the coordinates."""
+        return None
 
     @property
     def device_type(self) -> str:

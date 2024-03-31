@@ -29,6 +29,8 @@ async def async_setup_entry(
         new_devices.append(DeviceTypeSensor(tracker))
         new_devices.append(OperatingModeSensor(tracker))
         new_devices.append(ReportingIntervalSensor(tracker))
+        new_devices.append(ReportedAddressSensor(tracker))
+        new_devices.append(BatteryPercentSensor(tracker))
 
     if new_devices:
         async_add_entities(new_devices)
@@ -41,6 +43,7 @@ class SensorBase(Entity):
 
     def __init__(self, tracker: Tracker) -> None:
         """Initialize the sensor."""
+        self._attr_has_entity_name = True
         self._tracker = tracker
 
     # To link this entity to the cover device, this property must return an
@@ -161,3 +164,45 @@ class ReportingIntervalSensor(SensorBase):
     def state(self) -> StateType:
         """Return the state of the sensor."""
         return self._tracker.reporting_interval
+
+class ReportedAddressSensor(SensorBase):
+    """Provides the reported address for a GPS tracker."""
+
+    def __init__(self, tracker: Tracker) -> None:
+        """Initialize the sensor."""
+        self._tracker = tracker
+        self._attr_unique_id = f"{tracker.id}_reported_address"
+        self._attr_name = "Reported Address"
+        super().__init__(tracker)
+
+    @property
+    def state(self) -> StateType:
+        """Return the state of the sensor."""
+        return self._tracker.address
+
+
+class BatteryPercentSensor(SensorBase):
+    """Provides the battery percentage for a GPS tracker."""
+
+    device_class: SensorDeviceClass = SensorDeviceClass.BATTERY
+    _attr_unit_of_measurement = "%"
+
+    V0 = 3.3 # these figures are guesses based on observed data
+    Vmax = 4.17
+
+    def __init__(self, tracker: Tracker) -> None:
+        """Initialize the sensor."""
+        self._tracker = tracker
+        self._attr_unique_id = f"{tracker.id}_battery_percent"
+        self._attr_name = "Battery Percent"
+        super().__init__(tracker)
+
+    @property
+    def state(self) -> StateType:
+        """Return the state of the sensor."""
+        return round(
+            ((self._tracker.modem_voltage / 1000) - BatteryPercentSensor.V0)
+            / (BatteryPercentSensor.Vmax - BatteryPercentSensor.V0)
+            * 100,
+            0,
+        )

@@ -11,6 +11,7 @@ Integrates [Airbolt](https://theairbolt.com/) GPS tracker devices.
 ## Features
 * Create a tracker entity for each registered device
 * Sensors for some basic info like modem voltage and temperature, operating mode, and device type
+* Battery level percentage (guesstimated based on observations)
 
 ## Installation
 
