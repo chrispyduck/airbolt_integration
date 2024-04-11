@@ -187,7 +187,8 @@ class BatteryPercentSensor(SensorBase):
     device_class: SensorDeviceClass = SensorDeviceClass.BATTERY
     _attr_unit_of_measurement = "%"
 
-    V0 = 3.3 # these figures are guesses based on observed data
+    # these figures are guesses based on observed data
+    V0 = 3.65 # 3.7 = 10%
     Vmax = 4.17
 
     def __init__(self, tracker: Tracker) -> None:
