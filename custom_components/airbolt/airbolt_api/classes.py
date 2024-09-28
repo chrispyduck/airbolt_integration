@@ -6,6 +6,9 @@ from typing import Literal
 from pydantic import BaseModel, Field  # pylint: disable=no-name-in-module
 
 
+UpdateType = Literal["Motion", "SOS", "Schedule", "Location", "CMD"]
+
+
 class UserInfo(BaseModel):
     """Information about a user."""
 
@@ -140,9 +143,7 @@ class FoundDevice(BaseModel):
     name: str
     time_created: datetime = Field(alias="timeCreated")
     last_seen_time: datetime = Field(alias="lastSeenTime")
-    last_report_type: Literal["Motion", "SOS", "Schedule", "Location"] = Field(
-        alias="lastReportType"
-    )  # water?
+    last_report_type: UpdateType = Field(alias="lastReportType")  # water?
     esim: ESIM
     imei: str
     iccid: str
@@ -197,9 +198,7 @@ class HistoryEntry(BaseModel):
     accuracy: float
     location_changed: bool = Field(alias="locationChanged")
     duration: int
-    alert_type: Literal["Motion", "SOS", "Schedule", "Location", "CMD"] = Field(
-        alias="alertType"
-    )
+    alert_type: UpdateType = Field(alias="alertType")
     address: str
     last_seen_on: datetime = Field(alias="lastSeenOn")
 
