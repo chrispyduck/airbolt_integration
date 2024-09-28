@@ -91,6 +91,7 @@ class DeviceSubscription(BaseModel):
 
     status: str
 
+
 class FoundDevice(BaseModel):
     """A device reported by the API."""
 
@@ -99,7 +100,9 @@ class FoundDevice(BaseModel):
     alert_level: int = Field(alias="alertLevel")
     color: str | None
     deleted: bool
-    device_type: Literal["shield_gps"] = Field(alias="deviceType")  # TODO: figure out other types
+    device_type: Literal["shield_gps"] = Field(
+        alias="deviceType"
+    )  # TODO: figure out other types
     id: str = Field(alias="_id")
     last_history_time: datetime = Field(alias="lastHistoryTime")
     latitude: float  # unused?
@@ -119,8 +122,6 @@ class FoundDevice(BaseModel):
     tone: int
     tsa_accessible: bool = Field(alias="tsaAccessible")
     water_alarm: WaterAlarmConfiguration = Field(alias="waterAlarm")
-
-
 
     location_report_mode: str = Field(
         alias="locationReportMode"
@@ -181,6 +182,7 @@ class FoundDeviceList(BaseModel):
 
     __root__: list[FoundDevice]
 
+
 class HistoryEntry(BaseModel):
     """A data point representing a single update from a GPS tracker."""
 
@@ -195,7 +197,7 @@ class HistoryEntry(BaseModel):
     accuracy: float
     location_changed: bool = Field(alias="locationChanged")
     duration: int
-    alert_type: Literal["Motion", "SOS", "Schedule", "Location"] = Field(
+    alert_type: Literal["Motion", "SOS", "Schedule", "Location", "CMD"] = Field(
         alias="alertType"
     )
     address: str
