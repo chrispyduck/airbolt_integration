@@ -19,7 +19,7 @@
     "airbolt.sensor"
   ],
   "requirements": [
-    "pydantic>=1,<2"
+    "pydantic>=2,<3"
   ],
   "version": "0.3.0"
 }
