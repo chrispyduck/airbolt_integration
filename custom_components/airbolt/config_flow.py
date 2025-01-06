@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, Self
 
 import voluptuous as vol
 
@@ -59,6 +59,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
+    def is_matching(self, other_flow: Self) -> bool:
+        """Decide if two flows can be considered the same."""
+        return True  # until I know what to do here
+
     async def async_step_user(self, user_input=None) -> FlowResult:
         """Handle the initial step."""
         # This goes through the steps to take the user through the setup process.
@@ -67,6 +71,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         # and when that has some validated input, it calls `async_create_entry` to
         # actually create the HA config entry. Note the "title" value is returned by
         # `validate_input` above.
+        await self.async_set_unique_id(user_input[CONFIG_USERNAME])
+
         errors = {}
         if user_input is not None:
             try:
