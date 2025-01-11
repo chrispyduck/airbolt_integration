@@ -3,13 +3,13 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field  # pylint: disable=no-name-in-module
+from pydantic import BaseModel, Field, TypeAdapter
 
 
 UpdateType = Literal["Motion", "SOS", "Schedule", "Location", "CMD"]
 
 
-class UserInfo(BaseModel):
+class UserInfo(BaseModel, extra="allow"):
     """Information about a user."""
 
     id: str = Field(alias="_id")
@@ -27,6 +27,7 @@ class UserInfo(BaseModel):
     timezone: str
     deleted: bool
     cell_scan_limit: int = Field(alias="cellScanLimit")
+    is_shared_account_accepted: bool = Field(alias="isSharedAccountAccepted")
 
 
 class SessionInfo(BaseModel):
@@ -132,7 +133,8 @@ class FoundDevice(BaseModel):
     led_flash: bool = Field(alias="ledFlash")
     push_notification: bool = Field(alias="pushNotification")
     email_alerts: bool = Field(alias="emailAlerts")
-    location_update_notification: bool = Field(alias="locationUpdateNotification")
+    location_update_notification: bool = Field(
+        alias="locationUpdateNotification")
     sos_alert_notification: bool = Field(alias="sosAlertNotification")
 
     notification_emails: list[str] = Field(alias="notificationEmails")
@@ -178,10 +180,7 @@ class FoundDevice(BaseModel):
     cellScanLimit: int
 
 
-class FoundDeviceList(BaseModel):
-    """A list of devices reported by the API."""
-
-    __root__: list[FoundDevice]
+FoundDeviceListAdapter = TypeAdapter(list[FoundDevice])
 
 
 class HistoryEntry(BaseModel):

@@ -6,9 +6,10 @@ from urllib.parse import urljoin
 
 from aiohttp import ClientSession
 
-from .classes import DeviceHistoryPage, FoundDevice, FoundDeviceList, LoginResult, UserInfo
+from .classes import DeviceHistoryPage, FoundDevice, FoundDeviceListAdapter, LoginResult, UserInfo
 
 logger: logging.Logger = logging.getLogger("airbolt.client")
+
 
 class AirboltClientError(Exception):
     """Base class for exceptions raised by the Airbolt API client."""
@@ -62,9 +63,9 @@ class AirboltClient:
             if response.status == 200:
                 return await response.text()
 
-
             if response.status == 401:
-                logger.warning("Failed to GET %s: %i: %s", path, response.status, response.reason)
+                logger.warning("Failed to GET %s: %i: %s", path,
+                               response.status, response.reason)
                 await asyncio.sleep(500)
                 await self._reauthenticate()
             else:
@@ -110,7 +111,7 @@ class AirboltClient:
                 "twoFactorCode": "",
             },
         )
-        self._login_result = LoginResult.parse_raw(raw_response)
+        self._login_result = LoginResult.model_validate_json(raw_response)
 
         self._session.headers.update(
             {
@@ -126,15 +127,15 @@ class AirboltClient:
     async def get_user_info(self) -> UserInfo:
         """Obtain information about the logged in user."""
         raw_data = await self._get("users/me")
-        return UserInfo.parse_raw(raw_data)
+        return UserInfo.model_validate_json(raw_data)
 
     async def find_devices(self) -> list[FoundDevice]:
         """Fetch a list of devices registered with this account."""
         raw_data = await self._get(
             f"devices/find/{self._login_result.id}?page=0&perPage=999"
         )
-        result = FoundDeviceList.parse_raw(raw_data)
-        return result.__root__  # there's got to be a better way to do this
+        result = FoundDeviceListAdapter.validate_json(raw_data)
+        return result
 
     async def get_device_history_page(
         self, device_uuid: str, page: int = 1, page_size: int = 10
@@ -143,4 +144,4 @@ class AirboltClient:
         raw_data = await self._get(
             f"history/find/device/{device_uuid}?page={page}&perPage={page_size}"
         )
-        return DeviceHistoryPage.parse_raw(raw_data)
+        return DeviceHistoryPage.model_validate_json(raw_data)
