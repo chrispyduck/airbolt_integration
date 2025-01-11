@@ -113,6 +113,7 @@ class ModemVoltageSensor(SensorBase):
             self._tracker.modem_voltage / 1000 if self._tracker.modem_voltage else None
         )
 
+
 class DeviceTypeSensor(SensorBase):
     """Provides the device type for a GPS tracker."""
 
@@ -129,6 +130,7 @@ class DeviceTypeSensor(SensorBase):
     def state(self) -> StateType:
         """Return the state of the sensor."""
         return self._tracker.device_type.replace("_", " ").title()
+
 
 class OperatingModeSensor(SensorBase):
     """Provides the operating mode for a GPS tracker."""
@@ -147,6 +149,7 @@ class OperatingModeSensor(SensorBase):
         """Return the state of the sensor."""
         return self._tracker.operating_mode.title()
 
+
 class ReportingIntervalSensor(SensorBase):
     """Provides the reporting interval for a GPS tracker."""
 
@@ -164,6 +167,7 @@ class ReportingIntervalSensor(SensorBase):
     def state(self) -> StateType:
         """Return the state of the sensor."""
         return self._tracker.reporting_interval
+
 
 class ReportedAddressSensor(SensorBase):
     """Provides the reported address for a GPS tracker."""
@@ -188,8 +192,8 @@ class BatteryPercentSensor(SensorBase):
     _attr_unit_of_measurement = "%"
 
     # these figures are guesses based on observed data
-    V0 = 3.65 # 3.7 = 10%
-    Vmax = 4.17
+    V0 = 3.65  # 3.7 = 10%
+    Vmax = 4.2
 
     def __init__(self, tracker: Tracker) -> None:
         """Initialize the sensor."""
