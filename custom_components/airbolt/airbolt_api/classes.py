@@ -6,7 +6,7 @@ from typing import Literal
 from pydantic import BaseModel, Field, TypeAdapter
 
 
-UpdateType = Literal["Motion", "SOS", "Schedule", "Location", "CMD"]
+UpdateType = Literal["Motion", "SOS", "Schedule", "Location", "CMD", "Modem info"]
 
 
 class UserInfo(BaseModel, extra="allow"):
