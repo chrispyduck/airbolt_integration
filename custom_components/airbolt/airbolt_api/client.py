@@ -135,7 +135,7 @@ class AirboltClient:
             f"devices/find/{self._login_result.id}?page=0&perPage=999"
         )
         result = FoundDeviceListAdapter.validate_json(raw_data)
-        return result
+        return result.data
 
     async def get_device_history_page(
         self, device_uuid: str, page: int = 1, page_size: int = 10

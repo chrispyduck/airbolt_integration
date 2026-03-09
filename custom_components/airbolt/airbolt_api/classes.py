@@ -1,12 +1,13 @@
 """Datatypes used in Airbolt API responses."""
 
 from datetime import datetime
-from typing import Literal
+from typing import Generic, Literal, TypeVar
 
 from pydantic import BaseModel, Field, TypeAdapter
 
 
-UpdateType = Literal["Motion", "SOS", "Schedule", "Location", "CMD", "Modem info"]
+UpdateType = Literal["Motion", "SOS",
+                     "Schedule", "Location", "CMD", "Modem info"]
 
 
 class UserInfo(BaseModel, extra="allow"):
@@ -180,7 +181,30 @@ class FoundDevice(BaseModel):
     cellScanLimit: int
 
 
-FoundDeviceListAdapter = TypeAdapter(list[FoundDevice])
+class PaginationInfo(BaseModel):
+    """Pagination information for paged API responses."""
+
+    total: int
+    total_pages: int = Field(alias="totalPages")
+    next: int
+    has_next: bool = Field(alias="hasNext")
+    prev: int
+    has_prev: bool = Field(alias="hasPrev")
+    per_page: int = Field(alias="perPage")
+    current: int
+
+
+T = TypeVar("T", bound=BaseModel)
+
+
+class PaginatedData(BaseModel, Generic[T]):
+    """A generic wrapper for paginated API responses."""
+
+    data: list[T]
+    pagination: PaginationInfo
+
+
+FoundDeviceListAdapter = TypeAdapter(PaginatedData[FoundDevice])
 
 
 class HistoryEntry(BaseModel):
