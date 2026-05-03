@@ -40,9 +40,7 @@ async def async_setup_entry(
     """Add sensors for passed config_entry in HA."""
     hub: Hub = hass.data[DOMAIN][config_entry.entry_id]
 
-    new_devices = [
-        LocationTracker(hub, hub.devices[device]) for device in hub.devices
-    ]
+    new_devices = [LocationTracker(hub, hub.devices[device]) for device in hub.devices]
     if new_devices:
         async_add_entities(new_devices)
 
