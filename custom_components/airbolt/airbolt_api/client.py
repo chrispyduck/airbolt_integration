@@ -6,7 +6,13 @@ from urllib.parse import urljoin
 
 from aiohttp import ClientSession
 
-from .classes import DeviceHistoryPage, FoundDevice, FoundDeviceListAdapter, LoginResult, UserInfo
+from .classes import (
+    DeviceHistoryPage,
+    FoundDevice,
+    FOUND_DEVICE_LIST_ADAPTER,
+    LoginResult,
+    UserInfo,
+)
 
 logger: logging.Logger = logging.getLogger("airbolt.client")
 
@@ -64,8 +70,9 @@ class AirboltClient:
                 return await response.text()
 
             if response.status == 401:
-                logger.warning("Failed to GET %s: %i: %s", path,
-                               response.status, response.reason)
+                logger.warning(
+                    "Failed to GET %s: %i: %s", path, response.status, response.reason
+                )
                 await asyncio.sleep(500)
                 await self._reauthenticate()
             else:
@@ -134,7 +141,7 @@ class AirboltClient:
         raw_data = await self._get(
             f"devices/find/{self._login_result.id}?page=0&perPage=999"
         )
-        result = FoundDeviceListAdapter.validate_json(raw_data)
+        result = FOUND_DEVICE_LIST_ADAPTER.validate_json(raw_data)
         return result.data
 
     async def get_device_history_page(

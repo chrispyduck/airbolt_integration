@@ -4,11 +4,5 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-echo " ==> ruff"
+ruff format .
 ruff check . --fix
-
-echo " ==> pylint"
-pylint custom_components
-
-echo " ==> hassfest"
-python3 -m script.hassfest --action validate

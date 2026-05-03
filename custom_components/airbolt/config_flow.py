@@ -1,4 +1,5 @@
 """Config flow for Hello World integration."""
+
 from __future__ import annotations
 
 import logging
@@ -8,7 +9,6 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
-from homeassistant.data_entry_flow import FlowResult
 
 from .const import (  # pylint:disable=unused-import
     CONFIG_PASSWORD,
@@ -58,7 +58,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
-    async def async_step_user(self, user_input=None) -> FlowResult:
+    def is_matching(self, other_flow: config_entries.ConfigFlow) -> bool:
+        """Check if the provided input matches this config flow."""
+        return True
+
+    async def async_step_user(self, user_input=None) -> config_entries.ConfigFlowResult:
         """Handle the initial step."""
         # This goes through the steps to take the user through the setup process.
         # Using this it is possible to update the UI and prompt for additional

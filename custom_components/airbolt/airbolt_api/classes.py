@@ -6,8 +6,7 @@ from typing import Generic, Literal, TypeVar
 from pydantic import BaseModel, Field, TypeAdapter
 
 
-UpdateType = Literal["Motion", "SOS",
-                     "Schedule", "Location", "CMD", "Modem info"]
+UpdateType = Literal["Motion", "SOS", "Schedule", "Location", "CMD", "Modem info"]
 
 
 class UserInfo(BaseModel, extra="allow"):
@@ -134,8 +133,7 @@ class FoundDevice(BaseModel):
     led_flash: bool = Field(alias="ledFlash")
     push_notification: bool = Field(alias="pushNotification")
     email_alerts: bool = Field(alias="emailAlerts")
-    location_update_notification: bool = Field(
-        alias="locationUpdateNotification")
+    location_update_notification: bool = Field(alias="locationUpdateNotification")
     sos_alert_notification: bool = Field(alias="sosAlertNotification")
 
     notification_emails: list[str] = Field(alias="notificationEmails")
@@ -204,7 +202,7 @@ class PaginatedData(BaseModel, Generic[T]):
     pagination: PaginationInfo
 
 
-FoundDeviceListAdapter = TypeAdapter(PaginatedData[FoundDevice])
+FOUND_DEVICE_LIST_ADAPTER = TypeAdapter(PaginatedData[FoundDevice])
 
 
 class HistoryEntry(BaseModel):
