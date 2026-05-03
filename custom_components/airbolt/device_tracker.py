@@ -1,4 +1,7 @@
 """Platform for sensor integration."""
+
+from __future__ import annotations
+
 # This file shows the setup for the sensors associated with the cover.
 # They are setup in the same way with the call to the async_setup_entry function
 # via HA from the module __init__. Each sensor has a device_class, this tells HA how
@@ -6,16 +9,21 @@
 # what the unit is, so it can display the correct range. For predefined types (such as
 # battery), the unit_of_measurement should match what's expected.
 import logging
+from typing import TYPE_CHECKING
 
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.core import callback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .hub import Hub, Tracker
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity import DeviceInfo
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+    from .hub import Hub, Tracker
 
 _LOGGER = logging.getLogger(f"{DOMAIN}.device_tracker")
 
@@ -32,9 +40,7 @@ async def async_setup_entry(
     """Add sensors for passed config_entry in HA."""
     hub: Hub = hass.data[DOMAIN][config_entry.entry_id]
 
-    new_devices = []
-    for device in hub.devices:
-        new_devices.append(LocationTracker(hub, hub.devices[device]))
+    new_devices = [LocationTracker(hub, hub.devices[device]) for device in hub.devices]
     if new_devices:
         async_add_entities(new_devices)
 
@@ -49,7 +55,6 @@ class LocationTracker(CoordinatorEntity, TrackerEntity):
 
     def __init__(self, hub: Hub, tracker: Tracker) -> None:
         """Initialize the tracker."""
-
         super().__init__(hub.coordinator, context=tracker.id)
         self._hub = hub
         self._tracker = tracker
@@ -91,7 +96,7 @@ class LocationTracker(CoordinatorEntity, TrackerEntity):
     @property
     def device_info(self) -> DeviceInfo:
         """Return information to link this entity with the correct device."""
-        return self._tracker.build_device_info(True)
+        return self._tracker.build_device_info(parent=True)
 
     @property
     def source_type(self) -> str:

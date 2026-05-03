@@ -1,4 +1,5 @@
 """A demonstration 'hub' that connects several devices."""
+
 from __future__ import annotations
 
 # In a real implementation, this would be in an external library that's on PyPI.
@@ -7,17 +8,20 @@ from __future__ import annotations
 # for more information.
 # This dummy hub always returns 3 rollers.
 import collections
-from datetime import datetime, timedelta
 import logging
+from datetime import datetime, timedelta
+from typing import TYPE_CHECKING
 
 from aiohttp.web import HTTPClientError
-
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from . import airbolt_api as api
 from .const import DOMAIN
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
+
 
 _LOGGER = logging.getLogger(f"{DOMAIN}.hub")
 
@@ -47,7 +51,11 @@ class Tracker:
     _reporting_interval: int
 
     def __init__(self, discovered_info: api.FoundDevice) -> None:
-        """Create an instance of a Tracker that represents a single Airbolt GPS device."""
+        """
+        Create an instance of a Tracker.
+
+        Represents a single Airbolt GPS device.
+        """
         self._id = discovered_info.device_uuid
         self._name = ""
         self._model = ""
@@ -94,7 +102,8 @@ class Tracker:
         return True
 
     def update_location(self, history_entry: api.HistoryEntry) -> bool:
-        """Update the tracker data from the given history entry.
+        """
+        Update the tracker data from the given history entry.
 
         Returns a boolean indicating whether anything changed.
         """
@@ -133,47 +142,48 @@ class Tracker:
     def latitude(self) -> float:
         """Last reported latitude of this tracker."""
         if not self._last_report:
-            raise MissingDataError()
+            raise MissingDataError
         return self._last_report.latitude
 
     @property
     def longitude(self) -> float:
         """Last reported longitude of this tracker."""
         if not self._last_report:
-            raise MissingDataError()
+            raise MissingDataError
         return self._last_report.longitude
 
     @property
     def accuracy(self) -> int:
         """Accuracy (in meters) of the last reported location of this tracker."""
         if not self._last_report:
-            raise MissingDataError()
+            raise MissingDataError
         return int(self._last_report.accuracy or 10000)
 
     @property
     def address(self) -> str:
         """Geocoded address of the last location of this tracker."""
         if not self._last_report:
-            raise MissingDataError()
+            raise MissingDataError
         return self._last_report.address
 
     @property
     def alert_type(self) -> str:
         """Type of last report sent by this tracker: SOS, Motion, Schedule, Water(?)."""
         if not self._last_report:
-            raise MissingDataError()
+            raise MissingDataError
         return self._last_report.alert_type
 
     @property
     def last_report_time(self) -> datetime:
         """The timestamp of the last report from this tracker."""
         if not self._last_report:
-            raise MissingDataError()
+            raise MissingDataError
         return self._last_report.time_created
 
     @property
     def last_seen(self) -> datetime:
-        """The timestamp of when this tracker was last seen.
+        """
+        The timestamp of when this tracker was last seen.
 
         I'm not sure why this is different from the last report time.
         """
@@ -204,8 +214,12 @@ class Tracker:
         """The reporting interval of the device."""
         return self._reporting_interval
 
-    def build_device_info(self, parent: bool = False) -> DeviceInfo:
-        """Return a DeviceInfo instance used to relate entities under a single device."""
+    def build_device_info(self, *, parent: bool = False) -> DeviceInfo:
+        """
+        Return a DeviceInfo instance.
+
+        Used to relate entities under a single device.
+        """
         if parent:
             return DeviceInfo(
                 identifiers={(DOMAIN, self._id)},
@@ -235,8 +249,9 @@ class AirboltCoordinator(DataUpdateCoordinator):
         )
         self._hub = hub
 
-    async def _async_update_data(self):
-        """Fetch data from API endpoint.
+    async def _async_update_data(self) -> dict[str, dict[str, bool]]:
+        """
+        Fetch data from API endpoint.
 
         This is the place to pre-process the data to lookup tables
         so entities can quickly look up their data.
@@ -246,9 +261,10 @@ class AirboltCoordinator(DataUpdateCoordinator):
             # handled by the data update coordinator.
             _LOGGER.debug("Beginning background update")
             # async with async_timeout.timeout(10):
-            # Grab active context variables to limit data required to be fetched from API
-            # Note: using context is not required if there is no need or ability to limit
-            # data retrieved from API.
+            # Grab active context variables to limit data required to be
+            # fetched from API
+            # Note: using context is not required if there is no need or
+            # ability to limit data retrieved from API.
             listening_tracker_ids: set[str] = set(self.async_contexts())
             coordinator_data: dict[str, dict[str, bool]] = collections.defaultdict(dict)
 
@@ -279,13 +295,11 @@ class AirboltCoordinator(DataUpdateCoordinator):
                         page.data[0]
                     )
 
-            return coordinator_data
-        # except ApiAuthError as err:
-        #    # Raising ConfigEntryAuthFailed will cancel future updates
-        #    # and start a config flow with SOURCE_REAUTH (async_step_reauth)
-        #    raise ConfigEntryAuthFailed from err
         except Exception as exc:
-            raise UpdateFailed("Error communicating with API") from exc
+            msg = "Error communicating with API"
+            raise UpdateFailed(msg) from exc
+
+        return coordinator_data
 
 
 class Hub:
@@ -297,15 +311,16 @@ class Hub:
     _hass: HomeAssistant
     _client: api.AirboltClient
     _user: api.UserInfo
-    _devices: dict[str, Tracker] = {}
+    _devices: dict[str, Tracker]
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Init dummy hub."""
         self._hass = hass
         self._client = api.AirboltClient()
         self._coordinator = AirboltCoordinator(hass, self)
+        self._devices = {}
 
-    async def close(self):
+    async def close(self) -> None:
         """Clean up this hub instance."""
         await self._client.close()
 
@@ -320,7 +335,7 @@ class Hub:
                 client_error.reason,
                 exc_info=client_error,
             )
-            raise InvalidCredentials from client_error
+            raise InvalidCredentialsError from client_error
 
     async def verify_credentials(self, username: str, password: str) -> None:
         """Verify that the user's credentials are valid."""
@@ -371,7 +386,7 @@ class Hub:
         return self._devices
 
 
-class InvalidCredentials(Exception):
+class InvalidCredentialsError(Exception):
     """Invalid username or password."""
 
 

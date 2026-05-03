@@ -2,13 +2,23 @@
 
 import asyncio
 import logging
+from typing import Self
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession
 
-from .classes import DeviceHistoryPage, FoundDevice, FoundDeviceListAdapter, LoginResult, UserInfo
+from .classes import (
+    FOUND_DEVICE_LIST_ADAPTER,
+    DeviceHistoryPage,
+    FoundDevice,
+    LoginResult,
+    UserInfo,
+)
 
 logger: logging.Logger = logging.getLogger("airbolt.client")
+
+HTTP_OK = 200
+HTTP_UNAUTHORIZED = 401
 
 
 class AirboltClientError(Exception):
@@ -26,7 +36,11 @@ class AirboltClient:
     _password: str
 
     def __init__(self) -> None:
-        """Create an uninitialized instance of the Airbolt API client. The next call should be login()."""
+        """
+        Create an uninitialized instance of the Airbolt API client.
+
+        The next call should be login().
+        """
         self._session = ClientSession()
         self._session.headers.update(
             {
@@ -36,21 +50,26 @@ class AirboltClient:
             }
         )
 
-    async def __aenter__(self) -> "AirboltClient":
-        """Allow this client instance to be used as a context manager.
+    async def __aenter__(self) -> Self:
+        """
+        Allow this client instance to be used as a context manager.
 
         Handles the lifecycle of the underlying aiohttp session.
         """
         return self
 
-    async def __aexit__(self, *args):
-        """Allow this client instance to be used as a context manager.
+    async def __aexit__(
+        self,
+        *args: object,
+    ) -> None:
+        """
+        Allow this client instance to be used as a context manager.
 
         Handles the lifecycle of the underlying aiohttp session.
         """
         await self.close()
 
-    async def close(self):
+    async def close(self) -> None:
         """Close the current aiohttp session."""
         await self._session.close()
 
@@ -60,12 +79,13 @@ class AirboltClient:
         while retry:
             response = await self._session.get(urljoin(AirboltClient.BASE_URL, path))
 
-            if response.status == 200:
+            if response.status == HTTP_OK:
                 return await response.text()
 
-            if response.status == 401:
-                logger.warning("Failed to GET %s: %i: %s", path,
-                               response.status, response.reason)
+            if response.status == HTTP_UNAUTHORIZED:
+                logger.warning(
+                    "Failed to GET %s: %i: %s", path, response.status, response.reason
+                )
                 await asyncio.sleep(500)
                 await self._reauthenticate()
             else:
@@ -82,10 +102,10 @@ class AirboltClient:
                 urljoin(AirboltClient.BASE_URL, path), json=body
             )
 
-            if response.status == 200:
+            if response.status == HTTP_OK:
                 return await response.text()
 
-            if response.status == 401:
+            if response.status == HTTP_UNAUTHORIZED:
                 await asyncio.sleep(500)
                 await self._reauthenticate()
             else:
@@ -96,7 +116,6 @@ class AirboltClient:
 
     async def login(self, username: str, password: str) -> LoginResult:
         """Authenticate to the remote API using the given credentials."""
-
         self._username = username
         self._password = password
 
@@ -134,8 +153,8 @@ class AirboltClient:
         raw_data = await self._get(
             f"devices/find/{self._login_result.id}?page=0&perPage=999"
         )
-        result = FoundDeviceListAdapter.validate_json(raw_data)
-        return result
+        result = FOUND_DEVICE_LIST_ADAPTER.validate_json(raw_data)
+        return result.data
 
     async def get_device_history_page(
         self, device_uuid: str, page: int = 1, page_size: int = 10

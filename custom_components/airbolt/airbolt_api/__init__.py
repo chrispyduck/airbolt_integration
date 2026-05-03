@@ -15,15 +15,15 @@ from .classes import (
 from .client import AirboltClient
 
 __all__ = [
-    "UserInfo",
-    "SessionInfo",
-    "LoginResult",
-    "TemperatureConfiguration",
     "AccelerometerConfiguration",
-    "WaterAlarmConfiguration",
+    "AirboltClient",
+    "DeviceHistoryPage",
     "FoundDevice",
     "HistoryEntry",
+    "LoginResult",
     "Pagination",
-    "DeviceHistoryPage",
-    "AirboltClient",
+    "SessionInfo",
+    "TemperatureConfiguration",
+    "UserInfo",
+    "WaterAlarmConfiguration",
 ]

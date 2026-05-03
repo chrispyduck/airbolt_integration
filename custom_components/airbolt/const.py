@@ -3,4 +3,4 @@
 DOMAIN = "airbolt"
 
 CONFIG_USERNAME = "username"
-CONFIG_PASSWORD = "password"
+CONFIG_PASSWORD = "password"  # noqa: S105

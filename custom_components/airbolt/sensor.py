@@ -1,15 +1,21 @@
 """Sensors that add informational properties to tracker devices."""
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components.sensor.const import SensorDeviceClass
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfTemperature
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import DeviceInfo, Entity
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import StateType
+from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
-from .hub import Hub, Tracker
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.device_registry import DeviceInfo
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
+    from homeassistant.helpers.typing import StateType
+
+    from .hub import Hub, Tracker
 
 
 async def async_setup_entry(
@@ -53,7 +59,7 @@ class SensorBase(Entity):
     @property
     def device_info(self) -> DeviceInfo:
         """Return information to link this entity with the correct device."""
-        return self._tracker.build_device_info(False)
+        return self._tracker.build_device_info(parent=False)
 
 
 class LastSeenTimeSensor(SensorBase):

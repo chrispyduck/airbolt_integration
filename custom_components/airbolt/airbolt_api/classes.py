@@ -1,10 +1,11 @@
 """Datatypes used in Airbolt API responses."""
 
-from datetime import datetime
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, Field, TypeAdapter
 
+if TYPE_CHECKING:
+    from datetime import datetime
 
 UpdateType = Literal["Motion", "SOS", "Schedule", "Location", "CMD", "Modem info"]
 
@@ -104,9 +105,7 @@ class FoundDevice(BaseModel):
     alert_level: int = Field(alias="alertLevel")
     color: str | None
     deleted: bool
-    device_type: Literal["shield_gps"] = Field(
-        alias="deviceType"
-    )  # TODO: figure out other types
+    device_type: Literal["shield_gps"] = Field(alias="deviceType")
     id: str = Field(alias="_id")
     last_history_time: datetime = Field(alias="lastHistoryTime")
     latitude: float  # unused?
@@ -133,8 +132,7 @@ class FoundDevice(BaseModel):
     led_flash: bool = Field(alias="ledFlash")
     push_notification: bool = Field(alias="pushNotification")
     email_alerts: bool = Field(alias="emailAlerts")
-    location_update_notification: bool = Field(
-        alias="locationUpdateNotification")
+    location_update_notification: bool = Field(alias="locationUpdateNotification")
     sos_alert_notification: bool = Field(alias="sosAlertNotification")
 
     notification_emails: list[str] = Field(alias="notificationEmails")
@@ -157,30 +155,49 @@ class FoundDevice(BaseModel):
     """eDRX (extended discontinuous reception) Paging Time Window"""
     edrx_value: int
     """eDRX offline time multiplier?"""
-    # unused fields:
-    # {
-    isTrialAvailed: bool
-    rai_value: bool
-    listenToLock: bool
-    subscriptionRemindOn: datetime | None
-    userId: str
+    # unused fields from API response
+    is_trial_availed: bool = Field(alias="isTrialAvailed")
+    rai_value: bool = Field(alias="raiValue")
+    listen_to_lock: bool = Field(alias="listenToLock")
+    subscription_remind_on: datetime | None = Field(alias="subscriptionRemindOn")
+    user_id: str = Field(alias="userId")
     passcode: str
-    markedByUsername: str
-    markedByEmail: str
-    masterKey: str
-    outOfRangeTimeout: int | None
-    subscriptionRemindCount: int | None
-    cellRequestsCount: int
-    cellRequestsResetOn: datetime
-    continuousReportReset: datetime | None
+    marked_by_username: str = Field(alias="markedByUsername")
+    marked_by_email: str = Field(alias="markedByEmail")
+    master_key: str = Field(alias="masterKey")
+    out_of_range_timeout: int | None = Field(alias="outOfRangeTimeout")
+    subscription_remind_count: int | None = Field(alias="subscriptionRemindCount")
+    cell_requests_count: int = Field(alias="cellRequestsCount")
+    cell_requests_reset_on: datetime = Field(alias="cellRequestsResetOn")
+    continuous_report_reset: datetime | None = Field(alias="continuousReportReset")
     privilege: int
-    sharedUserCount: int
-    share_count: int
+    shared_user_count: int = Field(alias="sharedUserCount")
+    share_count: int = Field(alias="shareCount")
     subscription: DeviceSubscription
-    cellScanLimit: int
+    cell_scan_limit: int = Field(alias="cellScanLimit")
 
 
-FoundDeviceListAdapter = TypeAdapter(list[FoundDevice])
+class PaginationInfo(BaseModel):
+    """Pagination information for paged API responses."""
+
+    total: int
+    total_pages: int = Field(alias="totalPages")
+    next: int
+    has_next: bool = Field(alias="hasNext")
+    prev: int
+    has_prev: bool = Field(alias="hasPrev")
+    per_page: int = Field(alias="perPage")
+    current: int
+
+
+class PaginatedData[T](BaseModel):
+    """A generic wrapper for paginated API responses."""
+
+    data: list[T]
+    pagination: PaginationInfo
+
+
+FOUND_DEVICE_LIST_ADAPTER = TypeAdapter(PaginatedData[FoundDevice])
 
 
 class HistoryEntry(BaseModel):
