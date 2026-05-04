@@ -236,6 +236,8 @@ class BatteryPercentSensor(SensorBase):
     @property
     def state(self) -> StateType:
         """Return the state of the sensor."""
+        if not self._tracker.modem_voltage:
+            return None
         return min(
             100,
             round(
@@ -409,7 +411,11 @@ class CellRequestsCountSensor(SensorBase):
     def extra_state_attributes(self) -> dict[str, object]:
         """Return extra state attributes."""
         return {
-            "reset_on": self._tracker.cell_requests_reset_on.isoformat(),
+            "reset_on": (
+                self._tracker.cell_requests_reset_on.isoformat()
+                if self._tracker.cell_requests_reset_on
+                else "Unknown"
+            ),
             "scan_limit": self._tracker.cell_scan_limit,
         }
 

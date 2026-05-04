@@ -115,7 +115,7 @@ class FoundDevice(BaseModel):
     operating_mode: Literal["batteryLife", "responsiveness"] = Field(
         alias="operatingMode"
     )
-    schedule_report: list[Literal["gps", "temp", "cell"]] = Field(
+    schedule_report: list[Literal["gps", "temp", "cell", "wifi"]] = Field(
         alias="scheduleReport"
     )
     schedule_report_interval: int = Field(alias="scheduleReportInterval")
@@ -141,17 +141,17 @@ class FoundDevice(BaseModel):
     name: str
     time_created: datetime = Field(alias="timeCreated")
     last_seen_time: datetime = Field(alias="lastSeenTime")
-    last_report_type: UpdateType = Field(alias="lastReportType")  # water?
+    last_report_type: UpdateType | None = Field(alias="lastReportType", default=None)
     esim: ESIM
     imei: str
     iccid: str
-    psm_active_time: int
+    psm_active_time: int | None = None
     """Power Save Mode active time in seconds(?)"""
-    psm_tau: int
+    psm_tau: int | None = None
     """Power Save Mode Tracking Area Update"""
-    edrx_ptw: int
+    edrx_ptw: int | None = None
     """eDRX (extended discontinuous reception) Paging Time Window"""
-    edrx_value: int
+    edrx_value: int | None = None
     """eDRX offline time multiplier?"""
     # unused fields from API response
     is_trial_availed: bool = Field(alias="isTrialAvailed")
@@ -164,9 +164,13 @@ class FoundDevice(BaseModel):
     master_key: str = Field(alias="masterKey")
     out_of_range_timeout: int | None = Field(alias="outOfRangeTimeout")
     subscription_remind_count: int | None = Field(alias="subscriptionRemindCount")
-    cell_requests_count: int = Field(alias="cellRequestsCount")
-    cell_requests_reset_on: datetime = Field(alias="cellRequestsResetOn")
-    continuous_report_reset: datetime | None = Field(alias="continuousReportReset")
+    cell_requests_count: int | None = Field(alias="cellRequestsCount", default=None)
+    cell_requests_reset_on: datetime | None = Field(
+        alias="cellRequestsResetOn", default=None
+    )
+    continuous_report_reset: datetime | None = Field(
+        alias="continuousReportReset", default=None
+    )
     privilege: int
     shared_user_count: int = Field(alias="sharedUserCount")
     subscription: DeviceSubscription

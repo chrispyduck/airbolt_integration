@@ -51,9 +51,9 @@ class Tracker:
     _reporting_interval: int
     _accelerometer: api.AccelerometerConfiguration
     _subscription_status: str
-    _last_report_type: str
-    _cell_requests_count: int
-    _cell_requests_reset_on: datetime
+    _last_report_type: str | None
+    _cell_requests_count: int | None
+    _cell_requests_reset_on: datetime | None
     _cell_scan_limit: int
     _esim_updated_at: datetime
 
@@ -253,17 +253,17 @@ class Tracker:
         return self._subscription_status
 
     @property
-    def last_report_type(self) -> str:
+    def last_report_type(self) -> str | None:
         """The type of the last report from this device."""
         return self._last_report_type
 
     @property
-    def cell_requests_count(self) -> int:
+    def cell_requests_count(self) -> int | None:
         """The count of cell requests."""
         return self._cell_requests_count
 
     @property
-    def cell_requests_reset_on(self) -> datetime:
+    def cell_requests_reset_on(self) -> datetime | None:
         """When the cell requests count resets."""
         return self._cell_requests_reset_on
 
