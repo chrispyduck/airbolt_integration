@@ -1,11 +1,9 @@
 """Datatypes used in Airbolt API responses."""
 
-from typing import TYPE_CHECKING, Literal
+from datetime import datetime  # noqa: TC003
+from typing import Literal
 
 from pydantic import BaseModel, Field, TypeAdapter
-
-if TYPE_CHECKING:
-    from datetime import datetime
 
 UpdateType = Literal["Motion", "SOS", "Schedule", "Location", "CMD", "Modem info"]
 
@@ -157,7 +155,6 @@ class FoundDevice(BaseModel):
     """eDRX offline time multiplier?"""
     # unused fields from API response
     is_trial_availed: bool = Field(alias="isTrialAvailed")
-    rai_value: bool = Field(alias="raiValue")
     listen_to_lock: bool = Field(alias="listenToLock")
     subscription_remind_on: datetime | None = Field(alias="subscriptionRemindOn")
     user_id: str = Field(alias="userId")
@@ -172,7 +169,6 @@ class FoundDevice(BaseModel):
     continuous_report_reset: datetime | None = Field(alias="continuousReportReset")
     privilege: int
     shared_user_count: int = Field(alias="sharedUserCount")
-    share_count: int = Field(alias="shareCount")
     subscription: DeviceSubscription
     cell_scan_limit: int = Field(alias="cellScanLimit")
 

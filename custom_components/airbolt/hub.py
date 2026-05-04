@@ -49,6 +49,13 @@ class Tracker:
     _device_type: str
     _operating_mode: str
     _reporting_interval: int
+    _accelerometer: api.AccelerometerConfiguration
+    _subscription_status: str
+    _last_report_type: str
+    _cell_requests_count: int
+    _cell_requests_reset_on: datetime
+    _cell_scan_limit: int
+    _esim_updated_at: datetime
 
     def __init__(self, discovered_info: api.FoundDevice) -> None:
         """
@@ -62,6 +69,13 @@ class Tracker:
         self._last_report = None
         self._device_type = discovered_info.device_type
         self._operating_mode = discovered_info.operating_mode
+        self._accelerometer = discovered_info.accelerometer
+        self._subscription_status = discovered_info.subscription.status
+        self._last_report_type = discovered_info.last_report_type
+        self._cell_requests_count = discovered_info.cell_requests_count
+        self._cell_requests_reset_on = discovered_info.cell_requests_reset_on
+        self._cell_scan_limit = discovered_info.cell_scan_limit
+        self._esim_updated_at = discovered_info.esim.updated_at
         self.update_device(discovered_info)
 
     def update_device(self, discovered_info: api.FoundDevice) -> bool:
@@ -82,6 +96,13 @@ class Tracker:
             and self._device_type == discovered_info.device_type
             and self._operating_mode == discovered_info.operating_mode
             and self._reporting_interval == discovered_info.schedule_report_interval
+            and self._accelerometer == discovered_info.accelerometer
+            and self._subscription_status == discovered_info.subscription.status
+            and self._last_report_type == discovered_info.last_report_type
+            and self._cell_requests_count == discovered_info.cell_requests_count
+            and self._cell_requests_reset_on == discovered_info.cell_requests_reset_on
+            and self._cell_scan_limit == discovered_info.cell_scan_limit
+            and self._esim_updated_at == discovered_info.esim.updated_at
         ):
             return False
 
@@ -99,6 +120,13 @@ class Tracker:
         self._device_type = discovered_info.device_type
         self._operating_mode = discovered_info.operating_mode
         self._reporting_interval = discovered_info.schedule_report_interval
+        self._accelerometer = discovered_info.accelerometer
+        self._subscription_status = discovered_info.subscription.status
+        self._last_report_type = discovered_info.last_report_type
+        self._cell_requests_count = discovered_info.cell_requests_count
+        self._cell_requests_reset_on = discovered_info.cell_requests_reset_on
+        self._cell_scan_limit = discovered_info.cell_scan_limit
+        self._esim_updated_at = discovered_info.esim.updated_at
         return True
 
     def update_location(self, history_entry: api.HistoryEntry) -> bool:
@@ -213,6 +241,56 @@ class Tracker:
     def reporting_interval(self) -> int:
         """The reporting interval of the device."""
         return self._reporting_interval
+
+    @property
+    def accelerometer(self) -> api.AccelerometerConfiguration:
+        """The accelerometer configuration of the device."""
+        return self._accelerometer
+
+    @property
+    def subscription_status(self) -> str:
+        """The subscription status of the device."""
+        return self._subscription_status
+
+    @property
+    def last_report_type(self) -> str:
+        """The type of the last report from this device."""
+        return self._last_report_type
+
+    @property
+    def cell_requests_count(self) -> int:
+        """The count of cell requests."""
+        return self._cell_requests_count
+
+    @property
+    def cell_requests_reset_on(self) -> datetime:
+        """When the cell requests count resets."""
+        return self._cell_requests_reset_on
+
+    @property
+    def cell_scan_limit(self) -> int:
+        """The cell scan limit."""
+        return self._cell_scan_limit
+
+    @property
+    def esim_iccid(self) -> str:
+        """The eSIM ICCID."""
+        return self._esim_iccid
+
+    @property
+    def esim_eid(self) -> str:
+        """The eSIM EID."""
+        return self._esim_eid
+
+    @property
+    def esim_status(self) -> str:
+        """The eSIM status."""
+        return self._esim_status
+
+    @property
+    def esim_updated_at(self) -> datetime:
+        """When the eSIM information was last updated."""
+        return self._esim_updated_at
 
     def build_device_info(self, *, parent: bool = False) -> DeviceInfo:
         """
