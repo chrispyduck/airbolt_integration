@@ -50,7 +50,7 @@ class Tracker:
     _operating_mode: str
     _reporting_interval: int
     _accelerometer: api.AccelerometerConfiguration
-    _subscription_status: str
+    _subscription_status: api.DeviceSubscription
     _last_report_type: str | None
     _cell_requests_count: int | None
     _cell_requests_reset_on: datetime | None
@@ -70,7 +70,7 @@ class Tracker:
         self._device_type = discovered_info.device_type
         self._operating_mode = discovered_info.operating_mode
         self._accelerometer = discovered_info.accelerometer
-        self._subscription_status = discovered_info.subscription.status
+        self._subscription_status = discovered_info.subscription
         self._last_report_type = discovered_info.last_report_type
         self._cell_requests_count = discovered_info.cell_requests_count
         self._cell_requests_reset_on = discovered_info.cell_requests_reset_on
@@ -97,7 +97,7 @@ class Tracker:
             and self._operating_mode == discovered_info.operating_mode
             and self._reporting_interval == discovered_info.schedule_report_interval
             and self._accelerometer == discovered_info.accelerometer
-            and self._subscription_status == discovered_info.subscription.status
+            and self._subscription_status == discovered_info.subscription
             and self._last_report_type == discovered_info.last_report_type
             and self._cell_requests_count == discovered_info.cell_requests_count
             and self._cell_requests_reset_on == discovered_info.cell_requests_reset_on
@@ -121,7 +121,7 @@ class Tracker:
         self._operating_mode = discovered_info.operating_mode
         self._reporting_interval = discovered_info.schedule_report_interval
         self._accelerometer = discovered_info.accelerometer
-        self._subscription_status = discovered_info.subscription.status
+        self._subscription_status = discovered_info.subscription
         self._last_report_type = discovered_info.last_report_type
         self._cell_requests_count = discovered_info.cell_requests_count
         self._cell_requests_reset_on = discovered_info.cell_requests_reset_on
@@ -250,7 +250,15 @@ class Tracker:
     @property
     def subscription_status(self) -> str:
         """The subscription status of the device."""
-        return self._subscription_status
+        if (
+            self._subscription_status.end_time
+            and self._subscription_status.end_time
+            >= datetime.now(tz=self._subscription_status.end_time.tzinfo)
+        ):
+            return "Active until " + self._subscription_status.end_time.strftime(
+                "%Y-%m-%d"
+            )
+        return self._subscription_status.status
 
     @property
     def last_report_type(self) -> str | None:

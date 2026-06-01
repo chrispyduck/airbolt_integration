@@ -93,6 +93,8 @@ class DeviceSubscription(BaseModel):
     """Subscription information for a tracker."""
 
     status: str
+    start_time: datetime | None = Field(alias="subscriptionStartTime", default=None)
+    end_time: datetime | None = Field(alias="subscriptionEndTime", default=None)
 
 
 class FoundDevice(BaseModel):

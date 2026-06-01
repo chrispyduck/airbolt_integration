@@ -223,7 +223,7 @@ class BatteryPercentSensor(SensorBase):
     _attr_unit_of_measurement = "%"
 
     # these figures are guesses based on observed data
-    V0 = 3.65  # 3.7 = 10%
+    V0 = 3.5  # 3.7 = 10%
     Vmax = 4.2  # LiPO maximum, corresponds to 100%
 
     def __init__(self, tracker: Tracker) -> None:
@@ -238,14 +238,17 @@ class BatteryPercentSensor(SensorBase):
         """Return the state of the sensor."""
         if not self._tracker.modem_voltage:
             return None
-        return min(
-            100,
-            round(
-                ((self._tracker.modem_voltage / 1000) - BatteryPercentSensor.V0)
-                / (BatteryPercentSensor.Vmax - BatteryPercentSensor.V0)
-                * 100,
-                0,
+        return max(
+            min(
+                100,
+                round(
+                    ((self._tracker.modem_voltage / 1000) - BatteryPercentSensor.V0)
+                    / (BatteryPercentSensor.Vmax - BatteryPercentSensor.V0)
+                    * 100,
+                    0,
+                ),
             ),
+            0,
         )
 
 
